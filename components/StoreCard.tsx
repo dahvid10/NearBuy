@@ -95,7 +95,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({ store, allStores, onItemSw
                 </button>
             )}
           </div>
-          <ul className="space-y-1">
+          <ul className="space-y-1 max-h-56 overflow-y-auto pr-2">
             {store.items.map((item, index) => {
                const alternatives = allStores
                 .filter(s =>
