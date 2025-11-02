@@ -4,7 +4,7 @@ import { StoreCard } from './StoreCard';
 import { GasStationCard } from './GasStationCard';
 import { SkeletonLoader } from './SkeletonLoader';
 import { OptimalRouteDisplay } from './OptimalRouteDisplay';
-import { RouteIcon, DollarSignIcon, ChevronsUpIcon, ChevronsDownIcon, BookmarkIcon, FolderOpenIcon, TrashIcon, WarningIcon } from './icons';
+import { RouteIcon, DollarSignIcon, ChevronsUpIcon, ChevronsDownIcon, BookmarkIcon, FolderOpenIcon, TrashIcon, WarningIcon, ShareIcon, CheckCircleIcon } from './icons';
 
 interface ResultsDisplayProps {
   results: SearchResult[];
@@ -71,6 +71,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
 }) => {
   const [expandedStores, setExpandedStores] = useState<Set<string>>(new Set());
   const [searchName, setSearchName] = useState('');
+  const [copiedSearchId, setCopiedSearchId] = useState<string | null>(null);
 
   useEffect(() => {
     // When results change (new search, sorting), expand all cards.
@@ -101,6 +102,44 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     if (searchName.trim()) {
         onSaveSearch(searchName);
         setSearchName('');
+    }
+  };
+
+  const handleShareSavedSearch = async (search: SavedSearch) => {
+    const shoppingListSection = search.shoppingList 
+      ? `Shopping List:\n${search.shoppingList}\n\n` 
+      : '';
+    
+    const resultsSection = search.results.map(result => {
+      let resultString = `📍 ${result.name}\nAddress: ${result.address}\nDistance: ${result.distance}\nReviews: ${result.reviews}\n`;
+      if (result.type === 'store') {
+        resultString += `Subtotal: $${result.subtotal.toFixed(2)}\nItems:\n` + result.items.map(item => `  - ${item.name}: $${item.price.toFixed(2)}`).join('\n');
+      } else if (result.type === 'gas') {
+        resultString += 'Gas Prices:\n' + result.prices.map(p => `  - ${p.grade}: $${p.price.toFixed(3)}`).join('\n');
+      }
+      return resultString;
+    }).join('\n\n');
+
+    const shareText = `Saved Search from Near Buy: "${search.name}"\n\n${shoppingListSection}--- Search Results ---\n\n${resultsSection}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Near Buy Search: ${search.name}`,
+          text: shareText,
+        });
+      } catch (error) {
+        console.error('Error sharing saved search:', error);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        setCopiedSearchId(search.id);
+        setTimeout(() => setCopiedSearchId(null), 2000);
+      } catch (err) {
+        console.error('Failed to copy saved search to clipboard:', err);
+        alert('Failed to copy saved search to clipboard.');
+      }
     }
   };
 
@@ -305,6 +344,14 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                         title="Load Results"
                         >
                         <FolderOpenIcon />
+                        </button>
+                        <button
+                          onClick={() => handleShareSavedSearch(search)}
+                          className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition"
+                          aria-label={`Share search results for ${search.name}`}
+                          title={copiedSearchId === search.id ? 'Copied!' : (navigator.share ? 'Share Results' : 'Copy Results')}
+                        >
+                            {copiedSearchId === search.id ? <CheckCircleIcon className="h-5 w-5 text-green-500" /> : <ShareIcon />}
                         </button>
                         <button
                         onClick={() => onDeleteSearch(search.id)}
