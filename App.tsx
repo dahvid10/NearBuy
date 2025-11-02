@@ -1,14 +1,7 @@
-
-
-
-
-
-
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { ShoppingListInput } from './components/ShoppingListInput';
 import { ResultsDisplay } from './components/ResultsDisplay';
 import { ShoppingRunDisplay } from './components/ShoppingRunDisplay';
-import { ChangelogModal } from './components/ChangelogModal';
 import { FeedbackModal } from './components/FeedbackModal';
 import { findShoppingOptionsStream, generateOptimalRoute, findGasPricesStream } from './services/geminiService';
 import { useLocation } from './hooks/useLocation';
@@ -95,7 +88,6 @@ const App: React.FC = () => {
   const [isRouteLoading, setIsRouteLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'list' | 'options' | 'run'>('list');
   const [isLocationModalOpen, setIsLocationModalOpen] = useState<boolean>(false);
-  const [isChangelogModalOpen, setIsChangelogModalOpen] = useState<boolean>(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState<boolean>(false);
   const [isBuildingCustomRoute, setIsBuildingCustomRoute] = useState<boolean>(false);
   const [customRouteStops, setCustomRouteStops] = useState<RouteStop[]>([]);
@@ -140,16 +132,25 @@ const App: React.FC = () => {
             const allFoundItems = new Set<string>();
             finalResults.forEach(result => {
                 if (result.type === 'store') {
-                    result.items.forEach(item => allFoundItems.add(item.name.toLowerCase().trim()));
+                    result.items.forEach(item => {
+                        const lowerCaseItemName = item.name.toLowerCase().trim();
+                        allFoundItems.add(lowerCaseItemName);
+                    });
                 }
             });
-
+            
             const originalListItems = shoppingList
                 .split('\n')
-                .map(line => line.replace(/^(-\s*|\*\s*|\d+\.\s*)/, '').trim())
+                .map(line => line.replace(/^(-\s*|\*\s*|\d+\.\s*)/, '').trim().toLowerCase())
                 .filter(line => line.length > 0);
+            
+            const notFound = originalListItems.filter(item => {
+                const itemWords = item.split(/\s+/);
+                return ![...allFoundItems].some(foundItem => 
+                    itemWords.every(word => foundItem.includes(word))
+                );
+            });
 
-            const notFound = originalListItems.filter(item => !allFoundItems.has(item.toLowerCase().trim()));
             setMissingItems(notFound);
 
             return finalResults;
@@ -594,7 +595,6 @@ const App: React.FC = () => {
         onClose={() => setIsLocationModalOpen(false)}
         onSubmit={handleModalSearchSubmit}
       />
-      <ChangelogModal isOpen={isChangelogModalOpen} onClose={() => setIsChangelogModalOpen(false)} />
       <FeedbackModal
         isOpen={isFeedbackModalOpen}
         onClose={() => setIsFeedbackModalOpen(false)}
@@ -727,11 +727,14 @@ const App: React.FC = () => {
         </div>
         
         <footer className="text-center mt-8 py-4 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-          <span>Near Buy v1.1.1</span>
-          <span className="mx-2" aria-hidden="true">|</span>
-          <button onClick={() => setIsChangelogModalOpen(true)} className="hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">Changelog</button>
-          <span className="mx-2" aria-hidden="true">|</span>
-          <button onClick={handleFeedback} className="hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">Send Feedback</button>
+          <div className="mb-2">
+            <span>Near Buy v1.2.0</span>
+            <span className="mx-2" aria-hidden="true">|</span>
+            <button onClick={handleFeedback} className="hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">Send Feedback</button>
+          </div>
+          <p className="max-w-4xl mx-auto">
+            <strong>Disclaimer:</strong> All prices, distances, and store information are AI-generated estimates and are not guaranteed. Information may be inaccurate or outdated. Please verify all details directly with the respective stores before making a trip.
+          </p>
         </footer>
       </div>
     </div>

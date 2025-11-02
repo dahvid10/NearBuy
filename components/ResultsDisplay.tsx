@@ -165,7 +165,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   return (
     <div>
       <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-        <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">Shopping Options</h2>
+        <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">Your Shopping Options</h2>
         <div className="flex flex-wrap items-center gap-2">
             {results.length > 1 && !isLoading && !optimalRoute && !isBuildingCustomRoute && searchType === 'shopping' && (
             <div className="flex flex-wrap gap-2">
@@ -254,6 +254,22 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         </div>
       </div>
       
+      {results.length > 0 && !isLoading && (
+        <div className="bg-blue-100 dark:bg-blue-900/50 border-l-4 border-blue-500 text-blue-800 dark:text-blue-100 p-4 mb-6 rounded-r-lg shadow" role="alert">
+          <div className="flex">
+            <div className="py-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="font-bold">Please Note: AI-Generated Estimates</p>
+              <p className="text-sm">All prices, distances, and availability are estimates provided by AI and are not guaranteed. Please verify with stores directly.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {hasSearched && results.length > 0 && !optimalRoute && !isBuildingCustomRoute && (
         <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg">
             <h3 className="text-lg font-semibold mb-3 text-purple-600 dark:text-purple-400">Manage Search Results</h3>

@@ -103,7 +103,7 @@ export const OptimalRouteDisplay: React.FC<OptimalRouteDisplayProps> = ({ route,
   };
   
   const handleShare = async () => {
-    const routeText = `My Shopping Route:\n\nTotal Cost: $${route.totalCost.toFixed(2)}\nTotal Distance: ${route.totalDistance}\n\n${route.stops.map((stop, index) => {
+    const routeText = `My Shopping Route:\n\nTotal Estimated Cost: $${route.totalCost.toFixed(2)}\nEstimated Distance: ${route.totalDistance}\n\n${route.stops.map((stop, index) => {
       const storeDetails = allStores.find(s => s.name === stop.storeName);
       const addressLine = storeDetails ? `${storeDetails.address}\n` : '';
       return `Stop ${index + 1}: ${stop.storeName}\n${addressLine}- ` + stop.itemsToBuy.join('\n- ');
@@ -172,12 +172,12 @@ export const OptimalRouteDisplay: React.FC<OptimalRouteDisplayProps> = ({ route,
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-100 dark:bg-gray-800/50 p-4 rounded-md mb-6">
         <div className="flex items-center">
           <DollarSignIcon />
-          <span className="ml-2 text-gray-700 dark:text-gray-300">Total Cost:</span>
+          <span className="ml-2 text-gray-700 dark:text-gray-300">Total Estimated Cost:</span>
           <span className="ml-auto font-bold text-xl text-green-600 dark:text-green-400">${route.totalCost.toFixed(2)}</span>
         </div>
         <div className="flex items-center">
           <MapPinIcon />
-          <span className="ml-2 text-gray-700 dark:text-gray-300">Total Distance:</span>
+          <span className="ml-2 text-gray-700 dark:text-gray-300">Estimated Distance:</span>
           <span className={`ml-auto font-bold text-xl ${route.isModified ? 'text-yellow-600 dark:text-yellow-400' : 'text-blue-600 dark:text-blue-400'}`}>{route.totalDistance}</span>
         </div>
       </div>

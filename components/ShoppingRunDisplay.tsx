@@ -27,7 +27,7 @@ export const ShoppingRunDisplay: React.FC<ShoppingRunDisplayProps> = ({ route, a
         <div>
           <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500 flex items-center">
             <ChecklistIcon />
-            <span className="ml-2">Shopping Run</span>
+            <span className="ml-2">Your Shopping Run</span>
           </h2>
           <p className="text-gray-500 dark:text-gray-400">Track your items as you go.</p>
         </div>
@@ -60,7 +60,7 @@ export const ShoppingRunDisplay: React.FC<ShoppingRunDisplayProps> = ({ route, a
             <h3 className="text-3xl font-bold text-green-700 dark:text-green-300 mt-4">Shopping Complete!</h3>
             <p className="text-gray-600 dark:text-gray-400 mt-2">You've checked off all your items. Great job!</p>
             <div className="mt-6 text-lg bg-white dark:bg-gray-800 p-4 rounded-lg">
-                <span className="text-gray-700 dark:text-gray-300">Final Cost:</span>
+                <span className="text-gray-700 dark:text-gray-300">Final Estimated Cost:</span>
                 <span className="ml-2 font-bold text-xl text-green-600 dark:text-green-400">${route.totalCost.toFixed(2)}</span>
             </div>
         </div>
