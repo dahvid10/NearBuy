@@ -140,7 +140,7 @@ export const OptimalRouteDisplay: React.FC<OptimalRouteDisplayProps> = ({ route,
           </h3>
           <p className="text-gray-500 dark:text-gray-400">The most cost-effective plan to get all your items.</p>
         </div>
-        <div className="flex items-center space-x-2 mt-3 sm:mt-0">
+        <div className="flex items-center space-x-2 mt-3 sm:mt-0 self-end sm:self-auto">
           <button
               onClick={() => setIsMapModalOpen(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg text-sm transition flex items-center"
