@@ -52,7 +52,7 @@ const MapSelectionModal: React.FC<MapSelectionModalProps> = ({ isOpen, onClose, 
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 transition-opacity" role="dialog" aria-modal="true" aria-labelledby="map-modal-title">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-start justify-center z-50 transition-opacity pt-24" role="dialog" aria-modal="true" aria-labelledby="map-modal-title">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-gray-300 dark:border-gray-700 animate-fade-in-up">
                 <div className="flex justify-between items-center mb-4">
                     <h2 id="map-modal-title" className="text-2xl font-bold text-blue-600 dark:text-blue-400">Visualize Route</h2>
