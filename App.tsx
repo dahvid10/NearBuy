@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { ShoppingListInput } from './components/ShoppingListInput';
 import { ResultsDisplay } from './components/ResultsDisplay';
@@ -99,6 +100,7 @@ const App: React.FC = () => {
   const [startLocation, setStartLocation] = useState<string>('');
   const [searchType, setSearchType] = useState<'shopping' | 'gas'>('shopping');
   const [checkedItems, setCheckedItems] = useState<Record<string, Set<string>>>({});
+  const [missingItems, setMissingItems] = useState<string[]>([]);
 
   const [theme, toggleTheme] = useTheme();
   const { location, error: locationError, getLocation, permissionState } = useLocation();
@@ -119,19 +121,37 @@ const App: React.FC = () => {
       };
 
       const onStreamEnd = (groundingChunks: any[]) => {
-        if (groundingChunks.length > 0) {
-          setResults(prevResults => {
-            return prevResults.map(result => {
-              const matchedChunk = groundingChunks.find(chunk =>
-                chunk.maps?.title && result.name.toLowerCase().includes(chunk.maps.title.toLowerCase())
-              );
-              if (matchedChunk?.maps?.uri) {
-                return { ...result, url: matchedChunk.maps.uri };
-              }
-              return { ...result, url: result.url || null };
+        setResults(prevResults => {
+            let finalResults = [...prevResults];
+            if (groundingChunks.length > 0) {
+              finalResults = prevResults.map(result => {
+                const matchedChunk = groundingChunks.find(chunk =>
+                  chunk.maps?.title && result.name.toLowerCase().includes(chunk.maps.title.toLowerCase())
+                );
+                if (matchedChunk?.maps?.uri) {
+                  return { ...result, url: matchedChunk.maps.uri };
+                }
+                return { ...result, url: result.url || null };
+              });
+            }
+
+            const allFoundItems = new Set<string>();
+            finalResults.forEach(result => {
+                if (result.type === 'store') {
+                    result.items.forEach(item => allFoundItems.add(item.name.toLowerCase().trim()));
+                }
             });
-          });
-        }
+
+            const originalListItems = shoppingList
+                .split('\n')
+                .map(line => line.replace(/^(-\s*|\*\s*|\d+\.\s*)/, '').trim())
+                .filter(line => line.length > 0);
+
+            const notFound = originalListItems.filter(item => !allFoundItems.has(item.toLowerCase().trim()));
+            setMissingItems(notFound);
+
+            return finalResults;
+        });
       };
       
       await findShoppingOptionsStream(shoppingList, searchLocation, onResultFound, onStreamEnd);
@@ -201,6 +221,7 @@ const App: React.FC = () => {
     setHasSearched(true);
     setResults([]);
     setOptimalRoute(null);
+    setMissingItems([]);
     setActiveTab('options');
 
     if (startLocation.trim()) {
@@ -239,6 +260,7 @@ const App: React.FC = () => {
     setHasSearched(true);
     setResults([]);
     setOptimalRoute(null);
+    setMissingItems([]);
     setActiveTab('options');
 
     if (startLocation.trim()) {
@@ -272,6 +294,7 @@ const App: React.FC = () => {
         setHasSearched(true);
         setResults([]);
         setOptimalRoute(null);
+        setMissingItems([]);
         setActiveTab('options');
         if (searchType === 'gas') {
             executeGasSearch(location);
@@ -683,6 +706,7 @@ const App: React.FC = () => {
               onSaveSearch={handleSaveSearch}
               onLoadSearch={handleLoadSearch}
               onDeleteSearch={deleteSearch}
+              missingItems={missingItems}
             />
           </div>
 

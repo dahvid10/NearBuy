@@ -376,9 +376,22 @@ Instructions:
       }
     });
 
-    const jsonText = response.text;
-    const parsedRoute = JSON.parse(jsonText) as OptimalRoute;
-    return parsedRoute;
+    let jsonText = response.text;
+
+    // Sanitize the response: Gemini can sometimes wrap JSON in markdown.
+    if (jsonText.startsWith('```json')) {
+      jsonText = jsonText.substring(7, jsonText.length - 3).trim();
+    } else if (jsonText.startsWith('```')) {
+        jsonText = jsonText.substring(3, jsonText.length - 3).trim();
+    }
+    
+    try {
+        const parsedRoute = JSON.parse(jsonText) as OptimalRoute;
+        return parsedRoute;
+    } catch (parseError) {
+        console.error("Failed to parse JSON from Gemini:", jsonText, parseError);
+        throw new Error("The AI returned an invalid route format. Please try again.");
+    }
 
   } catch (error) {
     console.error("Error calling Gemini API for route generation:", error);

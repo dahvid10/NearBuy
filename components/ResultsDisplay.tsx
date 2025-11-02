@@ -4,7 +4,7 @@ import { StoreCard } from './StoreCard';
 import { GasStationCard } from './GasStationCard';
 import { SkeletonLoader } from './SkeletonLoader';
 import { OptimalRouteDisplay } from './OptimalRouteDisplay';
-import { RouteIcon, DollarSignIcon, ChevronsUpIcon, ChevronsDownIcon, BookmarkIcon, FolderOpenIcon, TrashIcon } from './icons';
+import { RouteIcon, DollarSignIcon, ChevronsUpIcon, ChevronsDownIcon, BookmarkIcon, FolderOpenIcon, TrashIcon, WarningIcon } from './icons';
 
 interface ResultsDisplayProps {
   results: SearchResult[];
@@ -35,6 +35,7 @@ interface ResultsDisplayProps {
   onSaveSearch: (name: string) => void;
   onLoadSearch: (search: SavedSearch) => void;
   onDeleteSearch: (id: string) => void;
+  missingItems: string[];
 }
 
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
@@ -65,7 +66,8 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   savedSearches,
   onSaveSearch,
   onLoadSearch,
-  onDeleteSearch
+  onDeleteSearch,
+  missingItems
 }) => {
   const [expandedStores, setExpandedStores] = useState<Set<string>>(new Set());
   const [searchName, setSearchName] = useState('');
@@ -108,7 +110,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     return Array.from(itemSet);
   }, [allStores]);
 
-  const missingItems = useMemo(() => {
+  const customRouteMissingItems = useMemo(() => {
       if (!isBuildingCustomRoute) return [];
       const selectedItems = new Set(customRouteStops.flatMap(stop => stop.itemsToBuy.map(i => i.toLowerCase())));
       return allShoppingListItems.filter(item => !selectedItems.has(item));
@@ -122,7 +124,13 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
       return <div className="bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg" role="alert">{error}</div>;
     }
     if (hasSearched && results.length === 0 && !isLoading) {
-      return <div className="text-center py-10 px-6 bg-gray-50 dark:bg-gray-800 rounded-lg"><p className="text-gray-500 dark:text-gray-400">No results found. Try modifying your search or list.</p></div>;
+      return (
+        <div className="text-center py-10 px-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <p className="text-gray-500 dark:text-gray-400">
+            No results found. Please try modifying your shopping list or specifying a different location.
+          </p>
+        </div>
+      );
     }
     if (!hasSearched) {
       return <div className="text-center py-10 px-6 bg-gray-50 dark:bg-gray-800 rounded-lg"><p className="text-gray-500 dark:text-gray-400">Perform a search on the 'Shopping List' tab to see results.</p></div>;
@@ -301,6 +309,21 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         </div>
       )}
 
+      {missingItems.length > 0 && !isLoading && !optimalRoute && (
+          <div className="bg-yellow-100 dark:bg-yellow-800 border-l-4 border-yellow-500 text-yellow-800 dark:text-yellow-100 p-4 mb-6 rounded-r-lg shadow-lg" role="alert">
+              <div className="flex">
+                  <div className="py-1"><WarningIcon /></div>
+                  <div className="ml-3">
+                      <p className="font-bold">Items Not Found</p>
+                      <p className="text-sm">The following items from your list could not be found at the queried stores:</p>
+                      <ul className="list-disc list-inside mt-2 text-sm">
+                          {missingItems.map((item, index) => <li key={index}>{item}</li>)}
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      )}
+      
       {optimalRoute && (
         <div className="mb-6">
           <OptimalRouteDisplay
@@ -320,8 +343,8 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex-grow">
                     <h3 className="text-lg font-bold text-green-600 dark:text-green-400">Custom Route Builder</h3>
-                    {missingItems.length > 0 ? (
-                        <p className="text-yellow-600 dark:text-yellow-400 text-xs">Missing {missingItems.length} items from your list.</p>
+                    {customRouteMissingItems.length > 0 ? (
+                        <p className="text-yellow-600 dark:text-yellow-400 text-xs">Missing {customRouteMissingItems.length} items from your list.</p>
                     ) : (
                         <p className="text-green-600 dark:text-green-400 text-xs">You've selected all items!</p>
                     )}
