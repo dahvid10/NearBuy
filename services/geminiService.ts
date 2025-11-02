@@ -234,10 +234,10 @@ export const findGasPricesStream = async (
         ? `near "${location}"`
         : `nearby`;
         
-    const prompt = `You are an expert local gas price assistant. Your goal is to find current gas prices for several stations ${locationPreamble}.
+    const prompt = `You are an expert local gas price assistant. Your goal is to find current gas prices for several stations within a 15-mile radius ${locationPreamble}.
 
     Instructions:
-    1.  Find at least 5 different gas stations nearby.
+    1.  Find at least 5 different gas stations within a 15-mile radius.
     2.  For each station, provide its name, full address, estimated distance from the user's location, and its Google Maps review rating (e.g., '4.5 stars (1,234 reviews)').
     3.  For each station, find the current price per gallon for Regular, Mid-grade, and Premium gasoline. If Diesel prices are available, include them as well. The prices should be realistic and as up-to-date as possible.
     4.  Format your entire response *only* using the following markdown structure. Do not add any introductory or concluding text. Stream each gas station block as soon as you find it.
