@@ -1,0 +1,7 @@
+{
+  "name": "Near Buy",
+  "description": "An application that helps you turn ideas into shopping lists, finds the best prices at local stores, and plans the optimal route to get everything you need.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
