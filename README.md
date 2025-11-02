@@ -3,11 +3,11 @@
   <h1>Near Buy</h1>
   <p><strong>Your intelligent shopping assistant that finds the best local prices and plans the most efficient route to get everything you need.</strong></p>
   <p>
-    <a href="#-key-features">Features</a> •
-    <a href="#-technologies-used">Tech Stack</a> •
-    <a href="#-getting-started">Getting Started</a> •
-    <a href="#-deployment">Deployment</a> •
-    <a href="#-project-structure">Project Structure</a>
+    <a href="#key-features">Features</a> •
+    <a href="#technologies-used">Tech Stack</a> •
+    <a href="#getting-started">Getting Started</a> •
+    <a href="#deployment">Deployment</a> •
+    <a href="#project-structure">Project Structure</a>
   </p>
 </div>
 
