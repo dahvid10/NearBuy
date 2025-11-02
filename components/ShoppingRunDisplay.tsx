@@ -135,12 +135,16 @@ export const ShoppingRunDisplay: React.FC<ShoppingRunDisplayProps> = ({ route, a
   return (
     <div className="animate-fade-in-up">
       <div className="flex flex-col sm:flex-row justify-between items-start mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500 flex items-center">
+        <div className="flex items-start">
+          <div className="flex-shrink-0 pt-1 text-green-500 dark:text-green-400">
             <ChecklistIcon />
-            <span className="ml-2">Your Shopping Run</span>
-          </h2>
-          <p className="text-gray-500 dark:text-gray-400">Track your items as you go.</p>
+          </div>
+          <div className="ml-3">
+            <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500">
+              Your Shopping Run
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400">Track your items as you go.</p>
+          </div>
         </div>
         <div className="flex items-center space-x-2 mt-3 sm:mt-0 self-end sm:self-auto">
             <button
