@@ -2,6 +2,8 @@
 
 
 
+
+
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { ShoppingListInput } from './components/ShoppingListInput';
 import { ResultsDisplay } from './components/ResultsDisplay';
@@ -231,19 +233,20 @@ const App: React.FC = () => {
 
     try {
         const currentLoc = await getLocation();
-        if(currentLoc) {
+        if (currentLoc) {
             executeSearch(currentLoc);
         } else {
-            setIsLocationModalOpen(true);
+            // This case should theoretically not be hit if getLocation rejects on failure.
+            setError("Your location could not be determined. Please enter one manually.");
             setIsLoading(false);
-            setHasSearched(false);
-            setActiveTab('list');
+            setActiveTab('options');
         }
     } catch (err) {
-        setIsLocationModalOpen(true);
+        // This is the primary path for location errors.
+        const errorMessage = (err instanceof Error) ? err.message : "Could not get your location. Please enter one manually.";
+        setError(errorMessage);
         setIsLoading(false);
-        setHasSearched(false);
-        setActiveTab('list');
+        setActiveTab('options');
     }
   }, [isOnline, getLocation, executeSearch, startLocation]);
   
@@ -273,16 +276,16 @@ const App: React.FC = () => {
       if (currentLoc) {
         executeGasSearch(currentLoc);
       } else {
-        setIsLocationModalOpen(true);
+        // This case should theoretically not be hit.
+        setError("Your location could not be determined. Please enter one manually.");
         setIsLoading(false);
-        setHasSearched(false);
-        setActiveTab('list');
+        setActiveTab('options');
       }
     } catch (err) {
-      setIsLocationModalOpen(true);
-      setIsLoading(false);
-      setHasSearched(false);
-      setActiveTab('list');
+        const errorMessage = (err instanceof Error) ? err.message : "Could not get your location. Please enter one manually.";
+        setError(errorMessage);
+        setIsLoading(false);
+        setActiveTab('options');
     }
   }, [isOnline, getLocation, executeGasSearch, startLocation]);
 
