@@ -1,87 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { OptimalRoute, Store, Item } from '../types';
-import { RouteIcon, DollarSignIcon, MapPinIcon, ChecklistIcon, FlagStartIcon, FlagFinishIcon, CircleIcon, SwapIcon, ShareIcon, MapIcon } from './icons';
-
-interface MapSelectionModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    route: OptimalRoute;
-    allStores: Store[];
-}
-
-const MapSelectionModal: React.FC<MapSelectionModalProps> = ({ isOpen, onClose, route, allStores }) => {
-    if (!isOpen) return null;
-
-    const addresses = useMemo(() => {
-        return route.stops
-        .map(stop => {
-            const store = allStores.find(s => s.name === stop.storeName);
-            return store ? encodeURIComponent(store.address) : null;
-        })
-        .filter((address): address is string => address !== null);
-    }, [route.stops, allStores]);
-    
-    const firstStopName = useMemo(() => {
-        if (route.stops.length > 0 && addresses.length > 0) {
-            return route.stops[0].storeName;
-        }
-        return 'your first stop';
-    }, [route.stops, addresses]);
-
-    const handleOpen = (mapService: 'google' | 'apple' | 'waze') => {
-        if (addresses.length === 0) return;
-    
-        let url = '';
-        switch(mapService) {
-            case 'google':
-                url = `https://www.google.com/maps/dir/${addresses.join('/')}`;
-                break;
-            case 'apple':
-                // Apple Maps URL scheme uses `daddr` for destination. `q` is a general query.
-                url = `https://maps.apple.com/?daddr=${addresses[0]}`;
-                break;
-            case 'waze':
-                url = `https://www.waze.com/ul?q=${addresses[0]}&navigate=yes`;
-                break;
-        }
-    
-        if (url) {
-            window.open(url, '_blank', 'noopener,noreferrer');
-        }
-        onClose();
-    };
-
-    return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 transition-opacity" role="dialog" aria-modal="true" aria-labelledby="map-modal-title">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-gray-300 dark:border-gray-700 animate-fade-in-up">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 id="map-modal-title" className="text-2xl font-bold text-blue-600 dark:text-blue-400">Visualize Route</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-800 dark:hover:text-white text-2xl leading-none" aria-label="Close">&times;</button>
-                </div>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    Only Google Maps supports the full multi-stop route. Other apps will navigate you directly to your first stop: <strong className="text-gray-700 dark:text-gray-300">{firstStopName}</strong>.
-                </p>
-                <div className="space-y-3">
-                    <button onClick={() => handleOpen('google')} className="w-full text-lg text-white font-semibold bg-blue-600 hover:bg-blue-700 rounded-lg py-3 transition-colors">
-                        Open Full Route in Google Maps
-                    </button>
-                    <button onClick={() => handleOpen('apple')} className="w-full text-lg text-white font-semibold bg-gray-700 hover:bg-gray-600 rounded-lg py-3 transition-colors">
-                        Navigate with Apple Maps
-                    </button>
-                    <button onClick={() => handleOpen('waze')} className="w-full text-lg text-white font-semibold bg-cyan-500 hover:bg-cyan-600 rounded-lg py-3 transition-colors">
-                        Navigate with Waze
-                    </button>
-                </div>
-                <div className="mt-6 flex justify-end">
-                    <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
+import { RouteIcon, DollarSignIcon, MapPinIcon, ChecklistIcon, FlagStartIcon, FlagFinishIcon, CircleIcon, SwapIcon } from './icons';
 
 interface OptimalRouteDisplayProps {
   route: OptimalRoute;
@@ -92,42 +11,12 @@ interface OptimalRouteDisplayProps {
 
 export const OptimalRouteDisplay: React.FC<OptimalRouteDisplayProps> = ({ route, onClear, allStores, onStoreSwap }) => {
   const [swappingStopIndex, setSwappingStopIndex] = useState<number | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const getStopSubtotal = (store: Store, items: string[]): number => {
       return items.reduce((total, itemName) => {
         const item = store.items.find(i => i.name.toLowerCase() === itemName.toLowerCase());
         return total + (item?.price || 0);
       }, 0);
-  };
-  
-  const handleShare = async () => {
-    const routeText = `My Shopping Route:\n\nTotal Estimated Cost: $${route.totalCost.toFixed(2)}\nEstimated Distance: ${route.totalDistance}\n\n${route.stops.map((stop, index) => {
-      const storeDetails = allStores.find(s => s.name === stop.storeName);
-      const addressLine = storeDetails ? `${storeDetails.address}\n` : '';
-      return `Stop ${index + 1}: ${stop.storeName}\n${addressLine}- ` + stop.itemsToBuy.join('\n- ');
-    }).join('\n\n')}`;
-    
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: 'My Shopping Route from Near Buy',
-                text: routeText,
-            });
-        } catch (error) {
-            console.error('Error sharing:', error);
-        }
-    } else {
-        try {
-            await navigator.clipboard.writeText(routeText);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
-        } catch (error) {
-            console.error('Error copying to clipboard:', error);
-            alert('Failed to copy route to clipboard.');
-        }
-    }
   };
 
   return (
@@ -141,24 +30,6 @@ export const OptimalRouteDisplay: React.FC<OptimalRouteDisplayProps> = ({ route,
           <p className="text-gray-500 dark:text-gray-400">The most cost-effective plan to get all your items.</p>
         </div>
         <div className="flex items-center space-x-2 mt-3 sm:mt-0 self-end sm:self-auto">
-          <button
-              onClick={() => setIsMapModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg text-sm transition flex items-center"
-              aria-label="Visualize route on map"
-              title="Visualize Route"
-            >
-              <MapIcon />
-              <span className="ml-2">Visualize</span>
-          </button>
-          <button
-              onClick={handleShare}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg text-sm transition flex items-center"
-              aria-label="Share route"
-              title="Share Route"
-            >
-              <ShareIcon />
-              <span className="ml-2">{copied ? 'Copied!' : 'Share'}</span>
-          </button>
           <button
             onClick={onClear}
             className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-300 font-bold py-1 px-3 rounded-lg text-sm transition"
@@ -322,12 +193,6 @@ export const OptimalRouteDisplay: React.FC<OptimalRouteDisplayProps> = ({ route,
           );
         })}
       </div>
-      <MapSelectionModal 
-        isOpen={isMapModalOpen}
-        onClose={() => setIsMapModalOpen(false)}
-        route={route}
-        allStores={allStores}
-      />
     </div>
   );
 };

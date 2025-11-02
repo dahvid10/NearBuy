@@ -3,6 +3,7 @@ import { ShoppingListInput } from './components/ShoppingListInput';
 import { ResultsDisplay } from './components/ResultsDisplay';
 import { ShoppingRunDisplay } from './components/ShoppingRunDisplay';
 import { FeedbackModal } from './components/FeedbackModal';
+import { HelpGuideModal } from './components/HelpGuideModal';
 import { findShoppingOptionsStream, generateOptimalRoute, findGasPricesStream } from './services/geminiService';
 import { useLocation } from './hooks/useLocation';
 import { useSavedLists } from './hooks/useSavedLists';
@@ -10,7 +11,7 @@ import { useSavedSearches } from './hooks/useSavedSearches';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { useTheme } from './hooks/useTheme';
 import type { Store, SortOption, OptimalRoute, Item, Coordinates, RouteStop, SearchResult, GasStation, SavedSearch } from './types';
-import { LogoIcon, WarningIcon, SunIcon, MoonIcon, ChecklistIcon } from './components/icons';
+import { LogoIcon, WarningIcon, SunIcon, MoonIcon, ChecklistIcon, QuestionMarkCircleIcon } from './components/icons';
 
 interface LocationModalProps {
   isOpen: boolean;
@@ -89,6 +90,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'list' | 'options' | 'run'>('list');
   const [isLocationModalOpen, setIsLocationModalOpen] = useState<boolean>(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState<boolean>(false);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
   const [isBuildingCustomRoute, setIsBuildingCustomRoute] = useState<boolean>(false);
   const [customRouteStops, setCustomRouteStops] = useState<RouteStop[]>([]);
   const [startLocation, setStartLocation] = useState<string>('');
@@ -595,6 +597,10 @@ const App: React.FC = () => {
         onClose={() => setIsLocationModalOpen(false)}
         onSubmit={handleModalSearchSubmit}
       />
+      <HelpGuideModal
+        isOpen={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+      />
       <FeedbackModal
         isOpen={isFeedbackModalOpen}
         onClose={() => setIsFeedbackModalOpen(false)}
@@ -613,14 +619,24 @@ const App: React.FC = () => {
           <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-600 dark:from-green-400 dark:to-blue-500 ml-3">
             Near Buy
           </h1>
-          <button
-            onClick={toggleTheme}
-            className="absolute right-0 p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Toggle theme"
-            title="Toggle theme"
-          >
-            {theme === 'light' ? <MoonIcon /> : <SunIcon />}
-          </button>
+          <div className="absolute right-0 flex items-center space-x-2">
+            <button
+              onClick={() => setIsHelpModalOpen(true)}
+              className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Open help guide"
+              title="Help Guide"
+            >
+              <QuestionMarkCircleIcon />
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Toggle theme"
+              title="Toggle theme"
+            >
+              {theme === 'light' ? <MoonIcon /> : <SunIcon />}
+            </button>
+          </div>
         </header>
 
         {permissionState === 'denied' && <LocationPermissionBanner />}
