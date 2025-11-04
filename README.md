@@ -13,20 +13,18 @@
 
 ---
 
-**Near Buy** is a smart Progressive Web App (PWA) designed to streamline your shopping experience. Simply input a shopping list—or even just an idea for an event—and let our AI-powered assistant do the heavy lifting. It finds the best prices at local stores, compares gas prices, and generates an optimized, multi-stop route to save you time and money.
+**Near Buy** is a smart Progressive Web App (PWA) that streamlines your shopping. Input a list or an idea, and our AI assistant finds the best local prices for groceries and gas, then plans an optimized multi-stop route to save you time and money.
 
 ## ✨ Key Features
 
-- **🧠 AI-Powered List Generation**: Turn abstract ideas like "backyard BBQ for 10" or a photo of a recipe into a complete shopping list.
-- **💰 Local Price Comparison**: Discovers which nearby stores have your items and compares their prices to find the best deals.
-- **⛽ Gas Price Finder**: Quickly locate the cheapest gas stations in your area.
-- **🗺️ Optimal Route Planning**: Generates the most cost-effective, multi-stop shopping route to get all your items.
-- **✏️ Custom Route Builder**: Don't like the optimal route? Drag, drop, and build your own perfect shopping trip.
-- **✅ Interactive Shopping Run**: A checklist-style "run mode" to track your items as you visit each store.
-- **💾 Save & Load**: Save your favorite shopping lists and search results for future use.
-- **📍 Geolocation & Manual Override**: Uses your browser's location for convenience, with the option to manually enter any starting point.
-- **📱 PWA & Offline Support**: Installable on your device with offline access to saved lists and a responsive, mobile-first design.
-- **🎨 Light & Dark Mode**: Automatically adapts to your system theme, with a manual toggle.
+- **🧠 AI List Generation**: Create shopping lists from text ideas (e.g., "Taco night for 4") or photos of recipes.
+- **💰 Local Price Finder**: Compare item prices across nearby grocery stores and find the cheapest local gas.
+- **🗺️ Smart Route Planning**: Automatically generate the most cost-effective, multi-stop shopping route.
+- **✏️ Custom Routes**: Modify the AI's suggested route or build your own from scratch.
+- **✅ Shopping Run Mode**: Use an interactive checklist to track items as you shop.
+- **💾 Save & Load**: Keep your lists and search results for future use.
+- **📱 PWA Ready**: Installable on your device, responsive, and offers offline access to saved data.
+- **🎨 Dark Mode**: Supports both light and dark themes.
 
 ## 🛠️ Technologies Used
 
@@ -42,7 +40,7 @@ This project uses modern web standards (`importmap`) and does not require a comp
 
 **Prerequisites:**
 -   [Node.js](https://nodejs.org/) (used to run a local server)
--   A valid Gemini API key from [Google AI Studio](https://ai.studio.google.com/app/apikey).
+-   A valid Gemini API key. Get one from [Google AI for Developers](https://ai.google.dev/).
 
 ### Local Setup
 
